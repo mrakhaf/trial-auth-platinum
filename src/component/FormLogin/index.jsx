@@ -40,8 +40,8 @@ function FormLogin(){
         .then(res => {
             localStorage.setItem('accessToken', res.data.data.token)
             setLoginStatus(res.data.message)
-            navigate('/')
             setLoading(false)
+            navigate('/')
         })
         .catch(err => {
             setLoginStatus(err.response.data.message)
