@@ -4,20 +4,20 @@ import Login from "../pages/Login";
 import DetailMenu from "../pages/DetailMenu";
 import { Navigate } from "react-router-dom";
 
-function ProtectedRoute({redirectPath='/login'}) {
+function ProtectedRoute({element, redirectPath='/login'}) {
     const token = localStorage.getItem('accessToken')
     if(!token){
         return <Navigate to={redirectPath} replace />
     }
 
-    return <Home/>
+    return element
 }
 
 function Router(){
     const routers = createBrowserRouter([
         {
             path: "/",
-            element: <ProtectedRoute/>,
+            element: <ProtectedRoute element={<Home/>}/>,
         },
         {
             path: "/login",
@@ -25,7 +25,7 @@ function Router(){
         },
         {
             path: "/menu/:id",
-            element: <DetailMenu/>,
+            element: <ProtectedRoute element={<DetailMenu/>}/>,
         }
     ])
 
