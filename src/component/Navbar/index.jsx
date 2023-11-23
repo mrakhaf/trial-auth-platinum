@@ -4,8 +4,18 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import './style.css'
+import { useState } from 'react';
 
 function NavBar() {
+  const [token, setToken] = useState(localStorage.getItem('accessToken'))
+
+  function handleLogout(){
+    if(token != null){
+      localStorage.removeItem('accessToken');
+      setToken(null)
+    }
+  }
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary navbar">
       <Container fluid>
@@ -26,7 +36,11 @@ function NavBar() {
           </Nav>
 
           <Link to={'/login'}>
-            <Button variant="outline-success">LOGIN</Button>
+            <Button variant={token == null ? "outline-success" : "outline-danger"} onClick={handleLogout}>
+              {
+                token == null ? "LOGIN" : "LOGOUT"
+              }
+            </Button>
           </Link>
         </Navbar.Collapse>
       </Container>
