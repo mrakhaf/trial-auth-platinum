@@ -9,13 +9,14 @@ const ListMenu = () => {
     const [name, setName] = useState("")
     const [type, setType] = useState("")
     const [reset, setReset] = useState(false)
+    const [deleteMessage, setDeleteMessage] = useState('')
 
     useEffect(() => {
         getMenus('', '')
     }, [])
 
     const getMenus = (dataName, dataType) => {
-        axios.get(`https://api.mudoapi.tech/menus?name=${dataName}&type=${dataType}`)
+        axios.get(`https://api.mudoapi.tech/menus?name=${dataName}&type=${dataType}&perPage=100&page=1`)
         .then(res => {
             setMenus(res.data.data.Data)
         })
@@ -40,6 +41,23 @@ const ListMenu = () => {
         setType("")
         setName("")
         getMenus('', '')
+    }
+
+    function handleDelete(e, id){
+        e.preventDefault()
+        const token = localStorage.getItem('accessToken')
+        axios.delete(`https://api.mudoapi.tech/menu/${id}`, 
+            {
+                headers: {
+                    Authorization: token
+                }
+            }
+        )
+        .then(res => {
+            console.log(res.data.message)
+            getMenus(name, type)
+        })
+        .catch(err => console.log(err))
     }
 
     return (
@@ -73,11 +91,11 @@ const ListMenu = () => {
                             )
                         }
 
-                       
-                        
-
                     </div>
                 </div>
+                <Link to={'/create-menu'}>
+                    <button type="button" className="btn btn-warning">ADD MENU</button>
+                </Link>
                 <div className="justify-content-center">
                     { menus.length ? (
                             menus.map((menu, id) => (
@@ -89,6 +107,7 @@ const ListMenu = () => {
                                     <Link to={`menu/${menu.id}`}>
                                         <button>detail</button>
                                     </Link>
+                                    <button onClick={(e) => handleDelete(e, menu.id)}>delete</button>
                                 </div>    
                             ))
                         ) : (
