@@ -9,23 +9,37 @@ const ListMenu = () => {
     const [name, setName] = useState("")
     const [type, setType] = useState("")
     const [reset, setReset] = useState(false)
-    const [deleteMessage, setDeleteMessage] = useState('')
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        nextPage: 2,
+        previousPage: 0
+    })
 
     useEffect(() => {
-        getMenus('', '')
+        getMenus('', '', 1)
     }, [])
 
-    const getMenus = (dataName, dataType) => {
-        axios.get(`https://api.mudoapi.tech/menus?name=${dataName}&type=${dataType}&perPage=100&page=1`)
+    const getMenus = (dataName, dataType, page) => {
+        axios.get(`https://api.mudoapi.tech/menus?name=${dataName}&type=${dataType}&perPage=5&page=${page}`)
         .then(res => {
             setMenus(res.data.data.Data)
+            handlePaginationData(res.data.data)
         })
         .catch(err => console.log(err))
     }
 
+    function handlePaginationData(data){
+        var paginationData = {
+            currentPage: data.currentPage,
+            nextPage: data.nextPage,
+            previousPage: data.previousPage
+        }
+        setPagination(paginationData)
+    }
+
     const handleSubmit = (e) => {
         setReset(true)
-        getMenus(name, type)
+        getMenus(name, type, 1)
     }
 
     const handleChangeName = (e) => {
@@ -40,7 +54,7 @@ const ListMenu = () => {
         setReset(false)
         setType("")
         setName("")
-        getMenus('', '')
+        getMenus('', '', 1)
     }
 
     function handleDelete(e, id){
@@ -55,9 +69,19 @@ const ListMenu = () => {
         )
         .then(res => {
             console.log(res.data.message)
-            getMenus(name, type)
+            getMenus(name, type, 1)
         })
         .catch(err => console.log(err))
+    }
+
+    function handleNext(){
+        var page = pagination.currentPage + 1
+        getMenus(name, type, page)
+    }
+
+    function handlePrevious(){
+        var page = pagination.currentPage - 1
+        getMenus(name, type, page)
     }
 
     return (
@@ -96,6 +120,14 @@ const ListMenu = () => {
                 <Link to={'/create-menu'}>
                     <button type="button" className="btn btn-warning">ADD MENU</button>
                 </Link>
+                <div>
+                    <h1>Page {pagination.currentPage}</h1>
+                </div>
+                <div className='mt-3 d-flex gap-3'>
+                    <button type="button" className="btn btn-success" disabled={pagination.previousPage == 0 ? true : false} onClick={(e) => handlePrevious()}>back</button>
+                    <button type="button" className="btn btn-success" disabled={pagination.nextPage == 0 ? true : false} onClick={(e) => handleNext()}>next</button>
+                </div>
+                
                 <div className="justify-content-center">
                     { menus.length ? (
                             menus.map((menu, id) => (
@@ -108,6 +140,9 @@ const ListMenu = () => {
                                         <button>detail</button>
                                     </Link>
                                     <button onClick={(e) => handleDelete(e, menu.id)}>delete</button>
+                                    <Link to={`edit/${menu.id}`}>
+                                        <button>Edit</button>
+                                    </Link>
                                 </div>    
                             ))
                         ) : (

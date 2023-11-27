@@ -4,6 +4,7 @@ import Login from "../pages/Login";
 import DetailMenu from "../pages/DetailMenu";
 import { Navigate } from "react-router-dom";
 import CreateMenu from "../pages/CreateMenu";
+import EditMenu from "../pages/EditMenu";
 
 function ProtectedRoute({element, redirectPath='/login'}) {
     const token = localStorage.getItem('accessToken')
@@ -31,6 +32,10 @@ function Router(){
         {
             path: "/create-menu",
             element: <ProtectedRoute element={<CreateMenu/>}/>,
+        },
+        {
+            path: "/edit/:id",
+            element: <ProtectedRoute element={<EditMenu/>}/>,
         },
     ])
 

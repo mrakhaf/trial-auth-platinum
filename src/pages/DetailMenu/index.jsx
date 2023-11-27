@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import NavBar from "../../component/Navbar"
 import { useParams } from "react-router-dom"
 import axios from "axios"
+import { Link } from "react-router-dom"
 
 function DetailMenu(){
     const {id} = useParams()
@@ -25,6 +26,9 @@ function DetailMenu(){
             <p>Name : {menu.name}</p>
             <p>Desc : {menu.description}</p>
             <p>Price : {menu.priceFormatted}</p>
+            <Link to={`/edit/${menu.id}`}>
+                <button>Edit</button>
+            </Link>
         </>
     )
 }
