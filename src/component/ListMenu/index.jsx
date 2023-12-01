@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 // import './style.css'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
+import apiMenu from '../../api/menu'
 
 const ListMenu = () => {
 
@@ -19,13 +20,14 @@ const ListMenu = () => {
         getMenus('', '', 1)
     }, [])
 
-    const getMenus = (dataName, dataType, page) => {
-        axios.get(`https://api.mudoapi.tech/menus?name=${dataName}&type=${dataType}&perPage=5&page=${page}`)
-        .then(res => {
-            setMenus(res.data.data.Data)
-            handlePaginationData(res.data.data)
-        })
-        .catch(err => console.log(err))
+    const getMenus = async (dataName, dataType, page) => {
+        try {
+            const response = await apiMenu.apiGetMenus(dataName, dataType, page)
+            setMenus(response.data.data.Data)
+            handlePaginationData(response.data.data)
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     function handlePaginationData(data){
@@ -57,21 +59,17 @@ const ListMenu = () => {
         getMenus('', '', 1)
     }
 
-    function handleDelete(e, id){
+    async function handleDelete(e, id){
         e.preventDefault()
-        const token = localStorage.getItem('accessToken')
-        axios.delete(`https://api.mudoapi.tech/menu/${id}`, 
-            {
-                headers: {
-                    Authorization: token
-                }
-            }
-        )
-        .then(res => {
-            console.log(res.data.message)
-            getMenus(name, type, 1)
-        })
-        .catch(err => console.log(err))
+
+        try {
+            const res = await apiMenu.apiDeleteMenu(id)
+            getMenus(name, type, pagination.currentPage)
+            console.log(res)
+        } catch (err) {
+            console.log(err)
+        }
+
     }
 
     function handleNext(){

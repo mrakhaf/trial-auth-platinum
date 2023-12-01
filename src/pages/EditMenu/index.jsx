@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import NavBar from '../../component/Navbar';
 import { useNavigate } from 'react-router-dom';
 import { Alert } from 'react-bootstrap';
+import apiMenu from '../../api/menu'
 
 const initialPayload = {
     name: "",
@@ -37,35 +38,30 @@ function EditMenu() {
         setMessageError(false)
     }
 
-    function getMenuDetail(idMenu){
-        axios.get(`https://api.mudoapi.tech/menu/${idMenu}`)
-        .then(res => {
+    async function getMenuDetail(idMenu){
+
+        const res = await apiMenu.apiGetMenuDetail(idMenu)
+        if (res.status == '200'){
             setEditMenuPayload(res.data.data)
-        })
-        .catch(err => console.log(err))
+        } else {
+            console.log(res)
+        }
+
     }
 
-    function handleEditMenu(idMenu){
+    async function handleEditMenu(idMenu){
         setDisableButtonSave(true)
-        const token = localStorage.getItem('accessToken')
-        axios.put(`https://api.mudoapi.tech/menu/${idMenu}`, 
-            editMenuPayload,
-            {
-                headers: {
-                    Authorization: token
-                }
-            }
-        )
-        .then(res => {
-            console.log(res.data.message)
+
+        const res = await apiMenu.apiEditMenu(idMenu, editMenuPayload)
+
+        if (res.status == 200){
             navigate(`/menu/${idMenu}`)
             setDisableButtonSave(false)
-        })
-        .catch(err => {
-            console.log(err)
+        } else {
+            console.log(res)
             setDisableButtonSave(false)
             setMessageError(true)
-        })
+        }
         
     }
 

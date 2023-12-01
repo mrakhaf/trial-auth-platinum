@@ -2,28 +2,22 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import DetailMenu from "../pages/DetailMenu";
-import { Navigate } from "react-router-dom";
 import CreateMenu from "../pages/CreateMenu";
 import EditMenu from "../pages/EditMenu";
-
-function ProtectedRoute({element, redirectPath='/login'}) {
-    const token = localStorage.getItem('accessToken')
-    if(!token){
-        return <Navigate to={redirectPath} replace />
-    }
-
-    return element
-}
+import ProtectedRoute from "../hoc/ProtectedRoute";
 
 function Router(){
+    
+    // catatan : penggunaan router juga bisa menggunakan useRoutes
+
     const routers = createBrowserRouter([
         {
             path: "/",
-            element: <ProtectedRoute element={<Home/>}/>,
+            element: <ProtectedRoute element={<Home/>} />,
         },
         {
             path: "/login",
-            element: <Login/>,
+            element: <ProtectedRoute element={<Login/>} isLogin={true}/>,
         },
         {
             path: "/menu/:id",
