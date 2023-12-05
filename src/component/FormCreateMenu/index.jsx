@@ -22,9 +22,6 @@ function FormCreateMenu(){
 
     function handleSetValue(e) {
         let {name, value} = e.target
-        if(name == "price"){
-            value = parseInt(value)
-        }
         setAddMenuPayload({...addMenuPayload, [name]: value})
     }
 
@@ -32,6 +29,8 @@ function FormCreateMenu(){
         setLoading(true)
 
         const token = localStorage.getItem('accessToken')
+
+        addMenuPayload.price = parseInt(addMenuPayload.price)
 
         axios.post(`https://api.mudoapi.tech/menu`, 
             addMenuPayload,
